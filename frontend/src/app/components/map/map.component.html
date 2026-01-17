@@ -57,6 +57,16 @@
     <div class="sidebar">
         <div class="sidebar-header">
             <h2><i class="fas fa-users"></i> Users ({{ allUsers().length }})</h2>
+            <div class="header-actions">
+                <!-- TODO: Remove simulation button before production -->
+                <button class="center-btn" [class.active]="isSimulating()" (click)="toggleSimulation()"
+                    title="Simulate Movement">
+                    <i class="fas fa-play" [class.fa-stop]="isSimulating()"></i>
+                </button>
+                <button class="center-btn" (click)="fitBoundsToUsers()" title="Fit to all users">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                </button>
+            </div>
         </div>
         <div class="user-list">
             @if (allUsers().length === 0) {

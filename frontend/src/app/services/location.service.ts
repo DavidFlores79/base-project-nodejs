@@ -90,6 +90,17 @@ export class LocationService {
     return this.http.get<any>(`/api/v1/locations/history/${userId}`);
   }
 
+  updateUserLocation(latitude: number, longitude: number) {
+    const currentUser = this.authService.getCurrentUser();
+    if (this.socket && currentUser) {
+      this.socket.emit('update_location', {
+        userId: currentUser._id,
+        latitude,
+        longitude
+      });
+    }
+  }
+
   disconnect() {
     if (this.socket) {
       this.socket.disconnect();

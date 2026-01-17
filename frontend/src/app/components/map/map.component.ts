@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, ViewChild, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GoogleMapsModule } from '@angular/google-maps';
+import { GoogleMapsModule, GoogleMap } from '@angular/google-maps';
 import { LocationService, UserLocation } from '../../services/location.service';
 import { AuthService } from '../../services/auth';
 
@@ -12,6 +12,7 @@ import { AuthService } from '../../services/auth';
   styleUrls: ['./map.component.css']
 })
 export class MapComponent implements OnInit, OnDestroy {
+  @ViewChild(GoogleMap) map!: GoogleMap;
   protected locationService = inject(LocationService);
   private authService = inject(AuthService);
 
@@ -85,47 +86,54 @@ export class MapComponent implements OnInit, OnDestroy {
     }));
   });
 
-  ngOnInit() {
-    // Auto-center map on users
-    this.centerMapOnUsers();
-    
-    // Re-center when users update
-    this.locationService.allUsers.set = new Proxy(this.locationService.allUsers.set, {
-      apply: (target, thisArg, args) => {
-        const result = Reflect.apply(target, thisArg, args);
-        this.centerMapOnUsers();
-        return result;
+  constructor() {
+    // Auto-center map when users change
+    effect(() => {
+      const users = this.allUsers();
+      if (users.length > 0 && this.map) {
+        // Debounce slightly to allow map to init
+        setTimeout(() => this.fitBoundsToUsers(), 500);
       }
     });
   }
 
-  ngOnDestroy() {
-    // Cleanup if needed
+  ngOnInit() {
+    // Initial load
+    setTimeout(() => this.fitBoundsToUsers(), 1000);
   }
 
-  centerMapOnUsers() {
-    const users = this.allUsers();
-    if (users.length === 0) return;
 
-    if (users.length === 1) {
-      this.center.set({
-        lat: users[0].location.latitude,
-        lng: users[0].location.longitude
-      });
-      this.zoom.set(15);
-    } else {
-      // Calculate bounds to fit all markers
-      const bounds = new google.maps.LatLngBounds();
-      users.forEach(user => {
+
+  fitBoundsToUsers() {
+    const users = this.allUsers();
+    if (users.length === 0 || !this.map) return;
+
+    const bounds = new google.maps.LatLngBounds();
+    let hasPoints = false;
+
+    users.forEach(user => {
+      if (user.location.latitude && user.location.longitude) {
         bounds.extend({
           lat: user.location.latitude,
           lng: user.location.longitude
         });
-      });
+        hasPoints = true;
+      }
+    });
+    
+    if (hasPoints) {
+      this.map.fitBounds(bounds);
       
-      const center = bounds.getCenter();
-      this.center.set({ lat: center.lat(), lng: center.lng() });
-      this.zoom.set(12); // Will auto-adjust based on bounds
+      // If only one user or very close points, fitBounds might zoom in too much
+      // Adjust if needed logic could go here, but Google Maps handles it reasonably well usually
+      // For single point it might stay at previous zoom or max zoom
+      if (users.length === 1) {
+         this.map.panTo({
+           lat: users[0].location.latitude,
+           lng: users[0].location.longitude
+         });
+         this.zoom.set(15);
+      }
     }
   }
 
@@ -160,5 +168,51 @@ export class MapComponent implements OnInit, OnDestroy {
 
   isCurrentUser(user: UserLocation): boolean {
     return user.userId === this.currentUser()?._id;
+  }
+
+  // TODO: Remove this simulation logic before production release
+  // Simulation Logic
+  isSimulating = signal(false);
+  private simulationInterval: any;
+
+  toggleSimulation() {
+    this.isSimulating.update(v => !v);
+    
+    if (this.isSimulating()) {
+      this.startSimulation();
+    } else {
+      this.stopSimulation();
+    }
+  }
+
+  private startSimulation() {
+    let lat = this.center().lat;
+    let lng = this.center().lng;
+    
+    // Find current user location to start from if available
+    const currentUser = this.allUsers().find(u => u.userId === this.currentUser()?._id);
+    if (currentUser) {
+      lat = currentUser.location.latitude;
+      lng = currentUser.location.longitude;
+    }
+
+    this.simulationInterval = setInterval(() => {
+      // Move slightly (approx 10-20 meters)
+      lat += (Math.random() - 0.5) * 0.002;
+      lng += (Math.random() - 0.5) * 0.002;
+      
+      this.locationService.updateUserLocation(lat, lng);
+    }, 2000);
+  }
+
+  private stopSimulation() {
+    if (this.simulationInterval) {
+      clearInterval(this.simulationInterval);
+      this.simulationInterval = null;
+    }
+  }
+
+  ngOnDestroy() {
+    this.stopSimulation();
   }
 }
