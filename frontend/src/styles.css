@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/* Dark theme for select dropdowns */
+select option {
+  background-color: #2a3942;
+  color: #f3f4f6;
+}
+
+/* Dark theme for inputs and selects */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="number"],
+select {
+  color-scheme: dark;
+}

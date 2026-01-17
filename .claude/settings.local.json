@@ -1,0 +1,85 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(curl:*)",
+      "Bash(netstat:*)",
+      "Bash(lsof:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git checkout:*)",
+      "Bash(git branch:*)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(dir:*)",
+      "Bash(npm install:*)",
+      "Bash(npm start)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run test:*)",
+      "Bash(npm run deploy:prepare:*)",
+      "Bash(node:*)",
+      "Bash(cd frontend:*)",
+      "Bash(ng:*)",
+      "Bash(findstr:*)",
+      "Bash(tasklist:*)",
+      "Bash(taskkill:*)",
+      "Bash(powershell:*)",
+      "Bash(grep:*)",
+      "Bash(kill:*)",
+      "Bash(pkill:*)",
+      "Skill(explore-plan)",
+      "Skill(explore-plan:*)",
+      "Bash(mkdir:*)",
+      "Bash(pm2 logs:*)",
+      "Bash(git mv:*)",
+      "Bash(xcopy /E /Y /I \"frontend\\\\dist\\\\frontend\\\\browser\\\\*\" \"public\"\")",
+      "Bash(git rm:*)",
+      "Bash(git reset:*)",
+      "Bash(npm audit:*)",
+      "Bash(npm uninstall:*)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "enabledMcpjsonServers": [
+    "context7",
+    "sequentialthinking",
+    "playwright"
+  ],
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "say 'All done'",
+            "timeout": 120
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "say 'Subagent finished'",
+            "timeout": 120
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/on-notification-say.sh",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}

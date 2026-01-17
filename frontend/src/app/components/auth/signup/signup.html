@@ -1,0 +1,73 @@
+<div class="min-h-screen flex items-center justify-center bg-whatsapp-dark login-background">
+    <div class="absolute inset-0 bg-gradient-to-br from-whatsapp-dark via-whatsapp-gray to-whatsapp-dark opacity-50">
+    </div>
+
+    <div class="relative bg-whatsapp-gray p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700">
+        <div class="text-center mb-8">
+            <div
+                class="inline-flex items-center justify-center w-16 h-16 bg-whatsapp-green rounded-full mb-4 shadow-lg">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-100 mb-2">Create Account</h1>
+            <p class="text-gray-400 text-sm">Join our platform today</p>
+        </div>
+
+        <form (ngSubmit)="signup()" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Username</label>
+                <input type="text" [(ngModel)]="username" name="username" required
+                    class="w-full px-4 py-2 bg-whatsapp-input border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-whatsapp-green text-gray-100 placeholder-gray-500"
+                    placeholder="johndoe" />
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Email Address</label>
+                <input type="email" [(ngModel)]="email" name="email" required
+                    class="w-full px-4 py-2 bg-whatsapp-input border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-whatsapp-green text-gray-100 placeholder-gray-500"
+                    placeholder="name@example.com" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">First Name</label>
+                    <input type="text" [(ngModel)]="firstName" name="firstName"
+                        class="w-full px-4 py-2 bg-whatsapp-input border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-whatsapp-green text-gray-100 placeholder-gray-500"
+                        placeholder="John" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Last Name</label>
+                    <input type="text" [(ngModel)]="lastName" name="lastName"
+                        class="w-full px-4 py-2 bg-whatsapp-input border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-whatsapp-green text-gray-100 placeholder-gray-500"
+                        placeholder="Doe" />
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Password</label>
+                <input type="password" [(ngModel)]="password" name="password" required
+                    class="w-full px-4 py-2 bg-whatsapp-input border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-whatsapp-green text-gray-100 placeholder-gray-500"
+                    placeholder="••••••••" />
+            </div>
+
+            <div *ngIf="error" class="text-red-400 text-sm bg-red-900/30 border border-red-800 p-3 rounded-lg">
+                {{ error }}
+            </div>
+
+            <button type="submit" [disabled]="loading"
+                class="w-full bg-whatsapp-green text-white py-3 px-4 rounded-lg hover:bg-opacity-90 disabled:bg-gray-600 transition-all font-medium shadow-lg">
+                <span *ngIf="!loading">Sign Up</span>
+                <span *ngIf="loading">Creating Account...</span>
+            </button>
+
+            <div class="text-center mt-4">
+                <p class="text-sm text-gray-400">
+                    Already have an account? <a routerLink="/login"
+                        class="text-whatsapp-green hover:underline font-semibold">Sign In</a>
+                </p>
+            </div>
+        </form>
+    </div>
+</div>
