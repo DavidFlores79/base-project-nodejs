@@ -1,0 +1,98 @@
+<div class="map-container">
+    <!-- Map -->
+    <google-map [center]="center()" [zoom]="zoom()" [options]="mapOptions()" width="100%" height="100%">
+
+        <!-- User Markers -->
+        @for (marker of markers(); track marker.user.userId) {
+        <map-marker [position]="marker.position" [title]="marker.title" [options]="marker.options"
+            (mapClick)="onMarkerClick(marker.user)">
+        </map-marker>
+        }
+
+        <!-- Info Window -->
+        @if (selectedUser()) {
+        <map-info-window [position]="{
+        lat: selectedUser()!.location.latitude,
+        lng: selectedUser()!.location.longitude
+      }">
+            <div class="info-window">
+                <div class="info-header">
+                    @if (selectedUser()!.avatar) {
+                    <img [src]="selectedUser()!.avatar" alt="Avatar" class="avatar">
+                    } @else {
+                    <div class="avatar-placeholder">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    }
+                    <div class="info-details">
+                        <h3>{{ getUserDisplayName(selectedUser()!) }}</h3>
+                        <p class="username">@{{ selectedUser()!.username }}</p>
+                    </div>
+                </div>
+                <div class="info-body">
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ selectedUser()!.location.latitude.toFixed(6) }}, {{
+                            selectedUser()!.location.longitude.toFixed(6) }}</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ getLastUpdateTime(selectedUser()!) }}</span>
+                    </div>
+                    @if (isCurrentUser(selectedUser()!)) {
+                    <div class="current-user-badge">
+                        <i class="fas fa-star"></i> You
+                    </div>
+                    }
+                </div>
+                <button class="close-btn" (click)="closeInfoWindow()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </map-info-window>
+        }
+    </google-map>
+
+    <!-- User List Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-users"></i> Users ({{ allUsers().length }})</h2>
+        </div>
+        <div class="user-list">
+            @if (allUsers().length === 0) {
+            <div class="empty-state">
+                <i class="fas fa-map-marked-alt"></i>
+                <p>No users with location data</p>
+            </div>
+            } @else {
+            @for (user of allUsers(); track user.userId) {
+            <div class="user-item" [class.current-user]="isCurrentUser(user)" (click)="onMarkerClick(user)">
+                @if (user.avatar) {
+                <img [src]="user.avatar" alt="Avatar" class="user-avatar">
+                } @else {
+                <div class="user-avatar-placeholder">
+                    <i class="fas fa-user"></i>
+                </div>
+                }
+                <div class="user-info">
+                    <div class="user-name">{{ getUserDisplayName(user) }}</div>
+                    <div class="user-username">@{{ user.username }}</div>
+                    <div class="user-time">{{ getLastUpdateTime(user) }}</div>
+                </div>
+                @if (isCurrentUser(user)) {
+                <div class="current-badge">
+                    <i class="fas fa-star"></i>
+                </div>
+                }
+            </div>
+            }
+            }
+        </div>
+    </div>
+
+    <!-- Connection Status -->
+    <div class="connection-status" [class.connected]="locationService.isConnected()">
+        <i [class]="locationService.isConnected() ? 'fas fa-circle' : 'fas fa-circle-notch fa-spin'"></i>
+        {{ locationService.isConnected() ? 'Connected' : 'Connecting...' }}
+    </div>
+</div>

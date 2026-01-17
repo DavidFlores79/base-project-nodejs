@@ -38,6 +38,11 @@ const userSchema = new mongoose.Schema({
         longitude: Number,
         updatedAt: Date
     },
+    locationHistory: [{
+        latitude: Number,
+        longitude: Number,
+        timestamp: { type: Date, default: Date.now }
+    }],
     isActive: {
         type: Boolean,
         default: true
@@ -48,6 +53,25 @@ const userSchema = new mongoose.Schema({
 
 // Hash password before saving
 userSchema.pre('save', async function(next) {
+    // Manage location history limits if it was modified
+    if (this.isModified('location') && this.location.latitude && this.location.longitude) {
+        if (!this.locationHistory) {
+            this.locationHistory = [];
+        }
+        
+        // Add current location to history
+        this.locationHistory.push({
+            latitude: this.location.latitude,
+            longitude: this.location.longitude,
+            timestamp: this.location.updatedAt || new Date()
+        });
+
+        // Keep only last 50 entries
+        if (this.locationHistory.length > 50) {
+            this.locationHistory = this.locationHistory.slice(-50);
+        }
+    }
+
     if (!this.isModified('password')) return next();
     
     try {

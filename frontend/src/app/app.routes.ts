@@ -5,6 +5,7 @@ import { MainLayoutComponent } from './components/layout/main-layout/main-layout
 import { LoginComponent } from './components/auth/login/login';
 import { SignupComponent } from './components/auth/signup/signup';
 import { HomeComponent } from './components/home/home';
+import { MapComponent } from './components/map/map.component';
 import { AuthService } from './services/auth';
 
 // Auth guard function
@@ -28,7 +29,8 @@ export const routes: Routes = [
         canActivate: [authGuard],
         children: [
             { path: '', component: HomeComponent },
-            { path: 'home', component: HomeComponent }
+            { path: 'home', component: HomeComponent },
+            { path: 'map', component: MapComponent }
         ]
     },
     { path: '**', redirectTo: '' }

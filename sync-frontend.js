@@ -28,6 +28,23 @@ function sync() {
 
     // Copy files
     fs.cpSync(src, dest, { recursive: true });
+    
+    // Inject Environment Variables into index.html
+    require('dotenv').config();
+    const indexHtmlPath = path.join(dest, 'index.html');
+    if (fs.existsSync(indexHtmlPath)) {
+        let content = fs.readFileSync(indexHtmlPath, 'utf8');
+        const apiKey = process.env.GOOGLE_MAPS_API_KEY || '';
+        
+        if (content.includes('__GOOGLE_MAPS_API_KEY__')) {
+            content = content.replace('__GOOGLE_MAPS_API_KEY__', apiKey);
+            fs.writeFileSync(indexHtmlPath, content);
+            console.log('Injected GOOGLE_MAPS_API_KEY into index.html');
+        } else {
+            console.warn('Placeholder __GOOGLE_MAPS_API_KEY__ not found in index.html');
+        }
+    }
+
     console.log('Frontend synced successfully!');
   } catch (err) {
     console.error('Sync failed:', err);

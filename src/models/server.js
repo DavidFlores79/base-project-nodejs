@@ -64,6 +64,7 @@ class Server {
   routes() {
     this.app.use("/api/v1/auth", require("../routes/authRoutes"));
     this.app.use("/api/v1/users", require("../routes/userRoutes"));
+    this.app.use("/api/v1/locations", require("../routes/locationRoutes"));
 
     // Handle SPA routing
     this.app.get('*', (req, res) => {
